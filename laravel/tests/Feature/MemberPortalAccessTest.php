@@ -158,4 +158,23 @@ class MemberPortalAccessTest extends TestCase
             ->assertJsonCount(1, 'data.contexts')
             ->assertJsonPath('data.contexts.0.context_type', 'family_head');
     }
+
+    public function test_super_admin_can_access_member_portal_dashboard_without_access_record(): void
+    {
+        $response = $this->actingAs($this->superAdmin, 'sanctum')
+            ->getJson('/api/v1/member-portal/dashboard');
+
+        $response->assertStatus(200)
+            ->assertJsonPath('success', true);
+    }
+
+    public function test_regular_user_cannot_access_member_portal_dashboard_without_access_record(): void
+    {
+        $response = $this->actingAs($this->regularUser, 'sanctum')
+            ->getJson('/api/v1/member-portal/dashboard');
+
+        $response->assertStatus(403)
+            ->assertJsonPath('success', false)
+            ->assertJsonPath('message', 'Portal access not active.');
+    }
 }

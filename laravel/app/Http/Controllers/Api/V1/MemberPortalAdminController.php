@@ -31,7 +31,7 @@ class MemberPortalAdminController extends Controller
         // Church Scoping
         $user = $request->user();
         if (!$user->hasRole(['Super Admin', 'Diocese Admin'])) {
-            $accessibleIds = ChurchAccessService::getAccessibleChurches($user);
+            $accessibleIds = ChurchAccessService::getAccessibleChurchIds($user);
             $query->whereIn('church_id', $accessibleIds);
         }
 
@@ -125,7 +125,7 @@ class MemberPortalAdminController extends Controller
         // Scope Check
         $user = $request->user();
         if (!$user->hasRole(['Super Admin', 'Diocese Admin'])) {
-            $accessibleIds = ChurchAccessService::getAccessibleChurches($user);
+            $accessibleIds = ChurchAccessService::getAccessibleChurchIds($user);
             $query->whereIn('church_id', $accessibleIds);
         }
 
@@ -198,7 +198,7 @@ class MemberPortalAdminController extends Controller
         // Scope Check
         $user = $request->user();
         if (!$user->hasRole(['Super Admin', 'Diocese Admin'])) {
-            $accessibleIds = ChurchAccessService::getAccessibleChurches($user);
+            $accessibleIds = ChurchAccessService::getAccessibleChurchIds($user);
             $query->whereIn('church_id', $accessibleIds);
         }
 
@@ -267,7 +267,7 @@ class MemberPortalAdminController extends Controller
         // Scope Check
         $user = $request->user();
         if (!$user->hasRole(['Super Admin', 'Diocese Admin'])) {
-            $accessibleIds = ChurchAccessService::getAccessibleChurches($user);
+            $accessibleIds = ChurchAccessService::getAccessibleChurchIds($user);
             $query->whereIn('church_id', $accessibleIds);
         }
 

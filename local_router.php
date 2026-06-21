@@ -5,6 +5,12 @@
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $projectRoot = __DIR__;
 
+// Redirect root to /msoceurope/ to match React's base path
+if ($uri === '/' || $uri === '' || $uri === '/msoceurope') {
+    header("Location: /msoceurope/");
+    exit;
+}
+
 // 1. Route API requests to Laravel public/index.php
 if (preg_match('/^\/api\//', $uri)) {
     $_SERVER['SCRIPT_NAME'] = '/laravel/public/index.php';

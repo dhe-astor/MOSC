@@ -1,0 +1,12 @@
+{
+  "name": "mosc-portal",
+  "version": "1.0.0",
+  "description": "MSOC Europe Portal - Root Runner",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "author": "",
+  "license": "MIT"
+}
