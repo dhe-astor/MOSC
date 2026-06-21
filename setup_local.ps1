@@ -51,13 +51,16 @@ if (-not (Test-Path $phpIni)) {
         # Enable extensions
         $content = $content -replace ';extension=curl', 'extension=curl'
         $content = $content -replace ';extension=fileinfo', 'extension=fileinfo'
+        $content = $content -replace ';extension=gd', 'extension=gd'
+        $content = $content -replace ';extension=exif', 'extension=exif'
         $content = $content -replace ';extension=mbstring', 'extension=mbstring'
         $content = $content -replace ';extension=openssl', 'extension=openssl'
         $content = $content -replace ';extension=pdo_sqlite', 'extension=pdo_sqlite'
         $content = $content -replace ';extension=sqlite3', 'extension=sqlite3'
+        $content = $content -replace ';extension=zip', 'extension=zip'
         
         Set-Content $phpIni $content
-        Write-Host "Configured php.ini with sqlite3, pdo_sqlite, openssl, mbstring, curl, and fileinfo extensions enabled."
+        Write-Host "Configured php.ini with sqlite3, pdo_sqlite, openssl, mbstring, curl, fileinfo, gd, exif, and zip extensions enabled."
     }
 }
 

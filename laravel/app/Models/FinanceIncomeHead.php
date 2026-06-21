@@ -13,11 +13,13 @@ class FinanceIncomeHead extends Model
         'code',
         'name',
         'description',
+        'member_default',
         'is_active',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'member_default' => 'boolean',
     ];
 
     public function chartAccount()

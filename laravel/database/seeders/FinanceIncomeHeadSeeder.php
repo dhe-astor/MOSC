@@ -41,10 +41,10 @@ class FinanceIncomeHeadSeeder extends Seeder
             ['code' => 'INC-022', 'name' => 'Building Fund', 'description' => 'Contributions dedicated to acquisition or renovation of church buildings.'],
             ['code' => 'INC-023', 'name' => 'Charity Fund', 'description' => 'Contributions raised for benevolence, educational, or medical relief.'],
             ['code' => 'INC-024', 'name' => 'Diocese Central Collection', 'description' => 'Contributions collected for or forwarded by the central diocese.'],
-            ['code' => 'INC-025', 'name' => 'Non-Member Donation', 'description' => 'Donations received from visitors, non-members, or general benefactors.'],
-            ['code' => 'INC-026', 'name' => 'Bank Interest', 'description' => 'Interest earned on church bank savings or fixed deposits.'],
-            ['code' => 'INC-027', 'name' => 'Refund Received', 'description' => 'Refunds or cashbacks received from suppliers or services.'],
-            ['code' => 'INC-074', 'name' => 'Miscellaneous Income', 'description' => 'Other minor receipts not covered elsewhere.'],
+            ['code' => 'INC-025', 'name' => 'Non-Member Donation', 'description' => 'Donations received from visitors, non-members, or general benefactors.', 'member_default' => false],
+            ['code' => 'INC-026', 'name' => 'Bank Interest', 'description' => 'Interest earned on church bank savings or fixed deposits.', 'member_default' => false],
+            ['code' => 'INC-027', 'name' => 'Refund Received', 'description' => 'Refunds or cashbacks received from suppliers or services.', 'member_default' => false],
+            ['code' => 'INC-074', 'name' => 'Miscellaneous Income', 'description' => 'Other minor receipts not covered elsewhere.', 'member_default' => false],
         ];
 
         foreach ($incomeHeads as $head) {
@@ -54,6 +54,7 @@ class FinanceIncomeHeadSeeder extends Seeder
                     'chart_account_id' => $revenueAccount->id,
                     'name' => $head['name'],
                     'description' => $head['description'],
+                    'member_default' => isset($head['member_default']) ? $head['member_default'] : true,
                     'is_active' => true,
                 ]
             );

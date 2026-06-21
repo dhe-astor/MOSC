@@ -1345,6 +1345,7 @@ class FinanceController extends Controller
             'code' => 'required|string|unique:finance_income_heads,code|max:50',
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
+            'member_default' => 'nullable|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -1362,6 +1363,7 @@ class FinanceController extends Controller
                 'code' => $request->input('code'),
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
+                'member_default' => $request->input('member_default', true),
                 'is_active' => true,
             ]);
 
