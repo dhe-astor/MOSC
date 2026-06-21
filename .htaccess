@@ -1,0 +1,14 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Route API requests to the laravel backend folder
+    RewriteRule ^api/(.*)$ laravel/public/index.php [L,QSA]
+
+    # Route storage requests to laravel public storage
+    RewriteRule ^storage/(.*)$ laravel/public/storage/$1 [L]
+
+    # Fallback all other routes to React's index.html (SPA Routing)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule . index.html [L]
+</IfModule>
