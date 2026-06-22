@@ -51,7 +51,11 @@ class MemberPortalController extends Controller
             ->where('status', 'active')
             ->get();
 
-        if ($accesses->isEmpty() && !$user->hasAnyRole(['Super Admin', 'Diocese Admin', 'Diocese Secretary', 'Priest Secretary', 'Parish Admin', 'Priest / Vicar'])) {
+        $userRoles = $user->roles()->pluck('name')->toArray();
+        $allowedRoles = ['Super Admin', 'Diocese Admin', 'Diocese Secretary', 'Priest Secretary', 'Parish Admin', 'Priest / Vicar'];
+        $hasAllowedRole = !empty(array_intersect($userRoles, $allowedRoles));
+
+        if ($accesses->isEmpty() && !$hasAllowedRole) {
             return $this->errorResponse('Portal access not active.', 403);
         }
 

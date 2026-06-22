@@ -10,6 +10,7 @@ class FinanceIncomeHead extends Model
 
     protected $fillable = [
         'chart_account_id',
+        'parent_id',
         'code',
         'name',
         'description',
@@ -25,6 +26,16 @@ class FinanceIncomeHead extends Model
     public function chartAccount()
     {
         return $this->belongsTo(FinanceChartAccount::class, 'chart_account_id');
+    }
+
+    public function parent()
+    {
+        return $this->belongsTo(FinanceIncomeHead::class, 'parent_id');
+    }
+
+    public function subheads()
+    {
+        return $this->hasMany(FinanceIncomeHead::class, 'parent_id');
     }
 
     public function incomeLines()

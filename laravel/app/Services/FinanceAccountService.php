@@ -52,7 +52,7 @@ class FinanceAccountService
      */
     public static function getIncomeHeads(): array
     {
-        return FinanceIncomeHead::with('chartAccount')
+        return FinanceIncomeHead::with(['chartAccount', 'parent', 'subheads'])
             ->where('is_active', true)
             ->orderBy('code')
             ->get()

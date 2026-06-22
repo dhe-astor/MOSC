@@ -1346,6 +1346,7 @@ class FinanceController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string|max:500',
             'member_default' => 'nullable|boolean',
+            'parent_id' => 'nullable|exists:finance_income_heads,id',
         ]);
 
         if ($validator->fails()) {
@@ -1360,6 +1361,7 @@ class FinanceController extends Controller
 
             $head = \App\Models\FinanceIncomeHead::create([
                 'chart_account_id' => $revenueAccount->id,
+                'parent_id' => $request->input('parent_id'),
                 'code' => $request->input('code'),
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),

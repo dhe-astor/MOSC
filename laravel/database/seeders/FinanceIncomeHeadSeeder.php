@@ -15,20 +15,14 @@ class FinanceIncomeHeadSeeder extends Seeder
             return;
         }
 
-        $incomeHeads = [
+        $flatIncomeHeads = [
             // Standard Parish Receipts (Requested List)
             ['code' => 'INC-001', 'name' => 'Monthly Family Contribution', 'description' => 'Regular monthly contribution from parish families.'],
             ['code' => 'INC-002', 'name' => 'Sunday Offering', 'description' => 'Collections during Sunday Holy Qurbana services.'],
-            ['code' => 'INC-003', 'name' => 'Nercha / Aanethe', 'description' => 'Traditional liturgical offerings and bread blessing collections.'],
-            ['code' => 'INC-004', 'name' => 'Qurbana Panam', 'description' => 'Standard offering for Holy Qurbana intentions.'],
-            ['code' => 'INC-005', 'name' => 'Special Holy Qurbana', 'description' => 'Offerings for dedicated or special intention Holy Qurbana services.'],
-            ['code' => 'INC-006', 'name' => 'Madhyastha Prarthana', 'description' => 'Contributions for intercessory prayers.'],
-            ['code' => 'INC-007', 'name' => 'Memorial Prayer', 'description' => 'Offerings for memorial prayers (Dhoopa Prarthana).'],
             ['code' => 'INC-008', 'name' => 'Dukhrana', 'description' => 'Special contributions for memorial feasts or Dukhrana days.'],
             ['code' => 'INC-009', 'name' => 'Baptism Offering', 'description' => 'Offerings made during the sacrament of Holy Baptism.'],
             ['code' => 'INC-010', 'name' => 'Marriage Offering', 'description' => 'Offerings made during the sacrament of Holy Matrimony.'],
             ['code' => 'INC-011', 'name' => 'Funeral Offering', 'description' => 'Offerings and contributions given during funeral services.'],
-            ['code' => 'INC-012', 'name' => 'House Blessing', 'description' => 'Offerings received during home blessings.'],
             ['code' => 'INC-013', 'name' => 'Certificate Fee', 'description' => 'Fees collected for issuing certificates (baptism, marriage, membership, etc.).'],
             ['code' => 'INC-014', 'name' => 'Christmas Offering', 'description' => 'Special collections and offerings for Christmas day services.'],
             ['code' => 'INC-015', 'name' => 'Easter Offering', 'description' => 'Special collections and offerings for Easter Sunday services.'],
@@ -45,16 +39,105 @@ class FinanceIncomeHeadSeeder extends Seeder
             ['code' => 'INC-026', 'name' => 'Bank Interest', 'description' => 'Interest earned on church bank savings or fixed deposits.', 'member_default' => false],
             ['code' => 'INC-027', 'name' => 'Refund Received', 'description' => 'Refunds or cashbacks received from suppliers or services.', 'member_default' => false],
             ['code' => 'INC-074', 'name' => 'Miscellaneous Income', 'description' => 'Other minor receipts not covered elsewhere.', 'member_default' => false],
+
+            // Parent Heads
+            ['code' => 'INC-028', 'name' => 'Qurbana Offerings', 'description' => 'Hierarchical parent for all Qurbana-related offerings.'],
+            ['code' => 'INC-029', 'name' => 'Special Prayer Offerings', 'description' => 'Hierarchical parent for all special prayer intercessions and requests.'],
+            ['code' => 'INC-003', 'name' => 'Nercha Offerings', 'description' => 'Hierarchical parent for all Nercha / Votive offerings.']
         ];
 
-        foreach ($incomeHeads as $head) {
+        foreach ($flatIncomeHeads as $head) {
             FinanceIncomeHead::updateOrCreate(
                 ['code' => $head['code']],
                 [
                     'chart_account_id' => $revenueAccount->id,
+                    'parent_id' => null,
                     'name' => $head['name'],
                     'description' => $head['description'],
                     'member_default' => isset($head['member_default']) ? $head['member_default'] : true,
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        // 2. Fetch the parent IDs to seed subheads
+        $qurbanaParent = FinanceIncomeHead::where('code', 'INC-028')->first();
+        $prayerParent = FinanceIncomeHead::where('code', 'INC-029')->first();
+        $nerchaParent = FinanceIncomeHead::where('code', 'INC-003')->first();
+
+        // 3. Seed subheads under Qurbana Offerings
+        $qurbanaSubheads = [
+            ['code' => 'INC-004', 'name' => 'Qurbana Panam', 'description' => 'Standard offering for Holy Qurbana intentions.'],
+            ['code' => 'INC-005', 'name' => 'Special Holy Qurbana', 'description' => 'Offerings for dedicated or special intention Holy Qurbana services.'],
+            ['code' => 'INC-006', 'name' => 'Madhyastha Prarthana', 'description' => 'Contributions for intercessory prayers during Qurbana.'],
+            ['code' => 'INC-030', 'name' => 'Vangippu Prarthana', 'description' => 'Offerings for prayers for the departed during Qurbana.'],
+            ['code' => 'INC-031', 'name' => 'Memorial Qurbana', 'description' => 'Holy Qurbana offered in memory of departed souls.'],
+            ['code' => 'INC-032', 'name' => 'Thanksgiving Qurbana', 'description' => 'Holy Qurbana offered as thanksgiving for blessings received.'],
+            ['code' => 'INC-033', 'name' => 'Birthday Qurbana', 'description' => 'Holy Qurbana offered on birthdays.'],
+            ['code' => 'INC-034', 'name' => 'Wedding Anniversary Qurbana', 'description' => 'Holy Qurbana offered on wedding anniversaries.'],
+            ['code' => 'INC-012', 'name' => 'House Blessing Qurbana', 'description' => 'Offerings received during home blessings and associated Qurbana.'],
+            ['code' => 'INC-035', 'name' => 'Special Intention Qurbana', 'description' => 'Holy Qurbana offered for specific private intentions.']
+        ];
+
+        foreach ($qurbanaSubheads as $sub) {
+            FinanceIncomeHead::updateOrCreate(
+                ['code' => $sub['code']],
+                [
+                    'chart_account_id' => $revenueAccount->id,
+                    'parent_id' => $qurbanaParent->id,
+                    'name' => $sub['name'],
+                    'description' => $sub['description'],
+                    'member_default' => true,
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        // 4. Seed subheads under Special Prayer Offerings
+        $prayerSubheads = [
+            ['code' => 'INC-036', 'name' => 'Madhyastha Prarthana', 'description' => 'Contributions for general intercessory prayers.'],
+            ['code' => 'INC-037', 'name' => 'Intercession Prayer', 'description' => 'Offerings for general saints intercession prayers.'],
+            ['code' => 'INC-038', 'name' => 'Novena Prayer', 'description' => 'Offerings for Novena services and special novena prayers.'],
+            ['code' => 'INC-039', 'name' => 'Special Fasting Prayer', 'description' => 'Offerings for special fasting prayer sessions.'],
+            ['code' => 'INC-040', 'name' => 'Prayer Request Offering', 'description' => 'Contributions for submitting specific prayer requests.'],
+            ['code' => 'INC-007', 'name' => 'Memorial Prayer', 'description' => 'Offerings for memorial prayers (Dhoopa Prarthana).']
+        ];
+
+        foreach ($prayerSubheads as $sub) {
+            FinanceIncomeHead::updateOrCreate(
+                ['code' => $sub['code']],
+                [
+                    'chart_account_id' => $revenueAccount->id,
+                    'parent_id' => $prayerParent->id,
+                    'name' => $sub['name'],
+                    'description' => $sub['description'],
+                    'member_default' => true,
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        // 5. Seed subheads under Nercha Offerings
+        $nerchaSubheads = [
+            ['code' => 'INC-042', 'name' => 'Aanethe', 'description' => 'Traditional bread blessing collections (Aanethe).'],
+            ['code' => 'INC-043', 'name' => 'Nercha', 'description' => 'General Nercha offerings.'],
+            ['code' => 'INC-044', 'name' => 'Candle Offering', 'description' => 'Offerings received from candle lighting.'],
+            ['code' => 'INC-045', 'name' => 'Oil Offering', 'description' => 'Offerings received from holy oil devotion.'],
+            ['code' => 'INC-046', 'name' => 'Incense Offering', 'description' => 'Offerings received for incense burning.'],
+            ['code' => 'INC-047', 'name' => 'Food Nercha', 'description' => 'Sponsorships or offerings for nercha food.'],
+            ['code' => 'INC-048', 'name' => 'Perunnal Nercha', 'description' => 'Offerings collected during parish perunnal (feast).'],
+            ['code' => 'INC-049', 'name' => 'Saint Feast Nercha', 'description' => 'Special offerings during individual saints feast days.']
+        ];
+
+        foreach ($nerchaSubheads as $sub) {
+            FinanceIncomeHead::updateOrCreate(
+                ['code' => $sub['code']],
+                [
+                    'chart_account_id' => $revenueAccount->id,
+                    'parent_id' => $nerchaParent->id,
+                    'name' => $sub['name'],
+                    'description' => $sub['description'],
+                    'member_default' => true,
                     'is_active' => true,
                 ]
             );
