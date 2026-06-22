@@ -132,4 +132,73 @@ class PerunnalAccountingTest extends TestCase
         $this->assertEquals(1600.00, $totalDebits);
         $this->assertEquals(700.00, $netBalance);
     }
+
+    public function test_programme_report(): void
+    {
+        // 1. Setup double entry postings for the Perunnal programme
+        $batch = FinanceJournalBatch::create([
+            'church_id' => $this->church->id,
+            'diocese_id' => $this->church->diocese_id,
+            'batch_date' => date('Y-m-d'),
+            'reference' => 'TEST-PERUNNAL-REPORT',
+            'source' => 'journal',
+            'status' => 'posted',
+            'created_by' => $this->user->id,
+        ]);
+
+        // Revenue credit: 500.00
+        FinanceLedgerEntry::create([
+            'journal_batch_id' => $batch->id,
+            'chart_account_id' => $this->revenueAccount->id,
+            'fund_class_id' => $this->fundClass->id,
+            'programme_account_id' => $this->perunnalProg->id,
+            'entry_date' => date('Y-m-d'),
+            'debit' => 0.00,
+            'credit' => 500.00,
+            'description' => 'Test Revenue Credit',
+        ]);
+
+        // Expense debit: 200.00
+        FinanceLedgerEntry::create([
+            'journal_batch_id' => $batch->id,
+            'chart_account_id' => $this->expenseAccount->id,
+            'fund_class_id' => $this->fundClass->id,
+            'programme_account_id' => $this->perunnalProg->id,
+            'entry_date' => date('Y-m-d'),
+            'debit' => 200.00,
+            'credit' => 0.00,
+            'description' => 'Test Expense Debit',
+        ]);
+
+        // 2. Request the reports/programmes endpoint
+        $response = $this->actingAs($this->user)
+            ->getJson('/api/v1/finance/reports/programmes?church_id=' . $this->church->id);
+
+        // 3. Assertions
+        $response->assertStatus(200);
+        $response->assertJsonStructure([
+            'success',
+            'message',
+            'data' => [
+                '*' => [
+                    'programme_id',
+                    'code',
+                    'name',
+                    'description',
+                    'income',
+                    'expense',
+                    'profit_loss',
+                ]
+            ]
+        ]);
+
+        // Assert values match our postings
+        $data = $response->json('data');
+        $progReport = collect($data)->firstWhere('programme_id', $this->perunnalProg->id);
+        
+        $this->assertNotNull($progReport);
+        $this->assertEquals(500.00, $progReport['income']);
+        $this->assertEquals(200.00, $progReport['expense']);
+        $this->assertEquals(300.00, $progReport['profit_loss']);
+    }
 }

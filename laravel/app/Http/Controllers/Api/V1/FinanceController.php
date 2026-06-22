@@ -1232,6 +1232,26 @@ class FinanceController extends Controller
         }
     }
 
+    public function reportsByProgramme(Request $request)
+    {
+        $user = $request->user();
+        $churchId = $request->query('church_id');
+
+        try {
+            if (!$this->hasDioceseFinanceAccess($user)) {
+                $accessible = ChurchAccessService::getAccessibleChurchIds($user);
+                $churchId = count($accessible) > 0 ? $accessible[0] : -1;
+            } else {
+                $churchId = $churchId ? (int)$churchId : null;
+            }
+
+            $report = FinanceReportService::getProgrammeReport($churchId, $user);
+            return $this->successResponse($report, 'Programme accounts profit/loss report retrieved.');
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), 500);
+        }
+    }
+
     public function reportsExport(Request $request)
     {
         $user = $request->user();

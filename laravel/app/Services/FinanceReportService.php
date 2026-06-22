@@ -199,4 +199,45 @@ class FinanceReportService
 
         return $csvContent;
     }
+
+    /**
+     * Generate profit/loss report grouped by Programme Accounts (Perunnal, cost centers, etc.)
+     */
+    public static function getProgrammeReport(?int $churchId, User $user): array
+    {
+        $programmes = \App\Models\FinanceProgrammeAccount::where('is_active', true);
+        if ($churchId !== null) {
+            $programmes->where(function ($q) use ($churchId) {
+                $q->where('church_id', $churchId)->orWhereNull('church_id');
+            });
+        }
+        $programmes = $programmes->get();
+
+        $report = [];
+        foreach ($programmes as $prog) {
+            $income = DB::table('finance_ledger_entries')
+                ->join('finance_chart_accounts', 'finance_ledger_entries.chart_account_id', '=', 'finance_chart_accounts.id')
+                ->where('finance_ledger_entries.programme_account_id', $prog->id)
+                ->where('finance_chart_accounts.type', 'revenue')
+                ->sum('finance_ledger_entries.credit') ?? 0.00;
+
+            $expense = DB::table('finance_ledger_entries')
+                ->join('finance_chart_accounts', 'finance_ledger_entries.chart_account_id', '=', 'finance_chart_accounts.id')
+                ->where('finance_ledger_entries.programme_account_id', $prog->id)
+                ->where('finance_chart_accounts.type', 'expense')
+                ->sum('finance_ledger_entries.debit') ?? 0.00;
+
+            $report[] = [
+                'programme_id' => $prog->id,
+                'code' => $prog->code,
+                'name' => $prog->name,
+                'description' => $prog->description,
+                'income' => (float)$income,
+                'expense' => (float)$expense,
+                'profit_loss' => (float)($income - $expense)
+            ];
+        }
+
+        return $report;
+    }
 }

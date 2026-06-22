@@ -398,6 +398,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/finance/reports/by-church', [FinanceController::class, 'reportsByChurch']);
         Route::get('/finance/reports/by-category', [FinanceController::class, 'reportsByCategory']);
         Route::get('/finance/reports/monthly', [FinanceController::class, 'reportsMonthly']);
+        Route::get('/finance/reports/programmes', [FinanceController::class, 'reportsByProgramme']);
         Route::get('/finance/reports/export', [FinanceController::class, 'reportsExport'])->middleware('require.2fa');
 
         // Course/Event link
